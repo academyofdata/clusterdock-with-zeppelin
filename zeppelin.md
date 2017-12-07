@@ -75,3 +75,17 @@ root
  |    |-- venue_name: string (nullable = true)
  |-- visibility: string (nullable = true)
 ```
+
+In order to accomodate this schema we'll staticaly define it using this code 
+
+```
+import org.apache.spark.sql.types._
+
+val event =  (new StructType).add("event_id", StringType).add("event_name",StringType).add("event_url",StringType).add("time",LongType)
+val group =  (new StructType).add("group_city",StringType).add("group_country",StringType).add("group_id",LongType).add("group_lat",DoubleType).add("group_lon",DoubleType).add("group_name",StringType).add("group_state",StringType).add("group_topics",ArrayType((new StructType).add("topic_name",StringType).add("urlkey",StringType)))
+val member = (new StructType).add("member_id",LongType).add("member_name",StringType).add("other_services",(new StructType).add("facebook",(new StructType).add("identifier",StringType)).add("twitter",(new StructType).add("identifier",StringType))).add("photo",StringType)
+val venue = (new StructType).add("lat",DoubleType).add("lon",DoubleType).add("venue_id",LongType).add("venue_name",StringType)
+val schema = (new StructType).add("event",event).add("group",group).add("guests",LongType)
+.add("member",member).add("mtime",LongType).add("response",StringType).add("rsvp_id",LongType).add("venue",venue).add("visibility",StringType)
+```
+
