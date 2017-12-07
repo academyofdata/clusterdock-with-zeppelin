@@ -149,4 +149,48 @@ meetupData = meetupData.select("dy","weekend_day","hr","rsvp_cnt","00", "01", "0
 
 Now we have all the data prepared as we will needed to apply some basic ML techniques on it
 
+```
+import org.apache.spark.mllib.regression.RidgeRegressionWithSGD
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.regression.LabeledPoint
+val trainingData = meetupData.map { row =>
+      val features = Array[Double](1.0,row(1).toString().toDouble,row(4).toString().toDouble, 
+                                   row(5).toString().toDouble,row(6).toString().toDouble,
+                                   row(7).toString().toDouble,row(8).toString().toDouble,
+                                   row(9).toString().toDouble,row(10).toString().toDouble, 
+                                   row(11).toString().toDouble,row(12).toString().toDouble, 
+                                   row(13).toString().toDouble,row(14).toString().toDouble, 
+                                   row(15).toString().toDouble,row(16).toString().toDouble,
+                                   row(17).toString().toDouble,row(18).toString().toDouble,
+                                   row(19).toString().toDouble,row(20).toString().toDouble, 
+                                   row(21).toString().toDouble,row(22).toString().toDouble, 
+                                   row(23).toString().toDouble,row(24).toString().toDouble, 
+                                   row(25).toString().toDouble,row(26).toString().toDouble, 
+                                   row(27).toString().toDouble)
+      LabeledPoint(row(3).toString().toDouble, Vectors.dense(features))
+}
+trainingData.cache()
+val model = new RidgeRegressionWithSGD().run(trainingData)
+```
+We trained the model using the data received let's now see what results do we get if we try to forecast the number of RSVPs for exactly the same date and hours (so that we can see how far we are with the prediction from the model vs actual data)
+
+```
+val scores = meetupData.map { row =>
+      val features = Vectors.dense(Array[Double](1.0,row(1).toString().toDouble, 
+                                                 row(4).toString().toDouble,row(5).toString().toDouble, 
+                                                 row(6).toString().toDouble,row(7).toString().toDouble,
+                                                 row(8).toString().toDouble,row(9).toString().toDouble,
+                                                 row(10).toString().toDouble,row(11).toString().toDouble, 
+                                                 row(12).toString().toDouble,row(13).toString().toDouble,
+                                                 row(14).toString().toDouble,row(15).toString().toDouble,
+                                                 row(16).toString().toDouble,row(17).toString().toDouble,
+                                                 row(18).toString().toDouble,row(19).toString().toDouble,
+                                                 row(20).toString().toDouble,row(21).toString().toDouble, 
+                                                 row(22).toString().toDouble,row(23).toString().toDouble,
+                                                 row(24).toString().toDouble,row(25).toString().toDouble, 
+                                                 row(26).toString().toDouble,row(27).toString().toDouble))
+      (row(0),row(2),row(3), model.predict(features).toInt) 
+}
+scores.take(40).foreach(println)
+```
 
