@@ -8,8 +8,13 @@ Since a standalone Zeppelin comes with an own Apache Spark interpreter, we need 
 
 We assume that you already have a dockerized cluster running CDH (started via clusterdock's standard scripts). 
 * clone this repository on the same host that is running the (two or more) clusterdock containers.
-* make setup-zeppelin-via-yarn.sh executable (i.e. ```chmod +x setup-zeppelin-via-yarn.sh```)
+* make setup-zeppelin-via-yarn.sh executable (i.e. ``` cd clusterdock-with-zeppelin; chmod +x setup-zeppelin-via-yarn.sh```)
 * run ./setup-zeppelin-via-yarn.sh
+Alternatively this single step after the repository is cloned
+
+```
+cd clusterdock-with-zeppelin; cat ./setup-zeppelin-via-yarn.sh | bash
+```
 
 If everything goes fine there should be a newly started Zeppelin container (called zepl, if you didn't edit the script)
 
