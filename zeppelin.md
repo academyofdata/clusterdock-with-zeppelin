@@ -36,7 +36,7 @@ val topics = Set("msg")
 You can use the same broker as the one the stream from meetup.com goes to (or, if you configured multiple brokers, any of them will do)
 
 The schema of the JSON files that come from meetup.com is that of a denormalized table, i.e. for each RSVP there are details about the event, group, member and venue. The structure is this 
-
+```
 root
  |-- event: struct (nullable = true)
  |    |-- event_id: string (nullable = true)
@@ -74,4 +74,4 @@ root
  |    |-- venue_id: long (nullable = true)
  |    |-- venue_name: string (nullable = true)
  |-- visibility: string (nullable = true)
-
+```
