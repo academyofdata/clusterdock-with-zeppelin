@@ -116,3 +116,37 @@ Once the stream is started, you can run 'regular' SQL queries on the *rsvps* tab
 select * from rsvps order by mtime desc limit 100
 ```
 
+Now let's do some analytics. We run this directly and not in in SparkSQL (i.e. using %sql) because we needed to refer to the results as dataframes later on. For this extremely simplistic forecast model we'll want to predict the number of RSVPs per hour, so we'll aggregate the data on a daily + hourly base, furthermore since we know that people tend to respond less to meetups during weekends we'll use this as an input variable (in machine learning lingo we'll call this 'feature'). And since the hour is the most important input we'll try to convert each hour in a feature (that is, we'll have columns for each hour) and this is done using the pivot function (see an explanatory post about pivot function here  https://databricks.com/blog/2016/02/09/reshaping-data-with-pivot-in-apache-spark.html)
+
+```
+val meetup = sqlContext.sql("""
+    select dy,hr,weekend_day,count(rsvp_id) as rsvp_cnt 
+    from (
+        select 
+            from_unixtime(cast(mtime/1000 as bigint), 'yyyy-MM-dd') as dy,
+            from_unixtime(cast(mtime/1000 as bigint), 'HH') as hr,
+            case when from_unixtime(cast(mtime/1000 as bigint),'EEEE') in ('Saturday','Sunday') then 1 else 0 end as weekend_day,
+            rsvp_id
+        from  rsvps
+        where mtime is not null
+    ) subq
+    group by dy,hr,weekend_day""")
+var meetupData = meetup.groupBy("dy","weekend_day","hr","rsvp_cnt").pivot("hr").count().orderBy("dy")
+```
+
+Based on how long the producer stream will run we might end up with events that don't cover every hour (e.g. we might not have rsvps that came during 2am-3am), so we first complete the results with empty columns holding 0 for the hours where we don't have data
+
+```
+///add missing columns if the data is somehow "sparse"
+(0 to 23).map(x => ("0"+x.toString) takeRight 2).foreach( x => {
+    if(meetupData.schema.fields.filter(x == _.name).length == 0)  meetupData = meetupData.withColumn(x, lit(0: Long))
+})
+//change column order
+
+meetupData = meetupData.select("dy","weekend_day","hr","rsvp_cnt","00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23")
+
+```
+
+Now we have all the data prepared as we will needed to apply some basic ML techniques on it
+
+
