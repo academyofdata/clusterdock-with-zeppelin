@@ -76,7 +76,7 @@ root
  |-- visibility: string (nullable = true)
 ```
 
-In order to accomodate this schema we'll staticaly define it using this code 
+In order to accomodate this schema we'll staticaly define it using this code (in a new Zeppelin Notebook cell)
 
 ```
 import org.apache.spark.sql.types._
@@ -87,5 +87,32 @@ val member = (new StructType).add("member_id",LongType).add("member_name",String
 val venue = (new StructType).add("lat",DoubleType).add("lon",DoubleType).add("venue_id",LongType).add("venue_name",StringType)
 val schema = (new StructType).add("event",event).add("group",group).add("guests",LongType)
 .add("member",member).add("mtime",LongType).add("response",StringType).add("rsvp_id",LongType).add("venue",venue).add("visibility",StringType)
+```
+So far we've only did preparations, let's now actually define the stream that reads from the Kafka topic and saves it to a SparkSQL table 
+
+First we put our hands on a handle of a Spark Streaming Context (with 5 seconds batches)
+```
+val ssc = StreamingContext.getActiveOrCreate(() => new StreamingContext(sc, Seconds(5)))
+```
+Then we create a stream using this context, we know that the messages will only contain texts, so String and StringDecoder will do. And since Kafka is providing keyed messages (i.e. key=>value pairs), since we did not specify any key when producing them, all messages will have null as key so we'll just keep the value (hence the ```map(_._2)```)
+```
+val strm = KafkaUtils.createDirectStream[String, String, StringDecoder,StringDecoder](ssc,kafkaConf,topics).map(_._2)
+```
+We then create an empty table (from an empty dataframe with the previously defined schema
+```
+sqlContext.createDataFrame(sc.emptyRDD[Row], schema).write.mode("overwrite").saveAsTable("rsvps")
+```
+And lastly we read each RDD in stream and save it to the table
+```
+strm.foreachRDD { rdd =>sqlContext.read.schema(schema).json(rdd).write.mode(SaveMode.Append).saveAsTable("rsvps")}
+```
+The only thing needed now is to start the stream and that's quite straightforward 
+```
+ssc.start()
+```
+Once the stream is started, you can run 'regular' SQL queries on the *rsvps* table (don't forget to prefix cells with %sql) like this 
+```
+%sql
+select * from rsvps order by mtime desc limit 100
 ```
 
