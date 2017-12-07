@@ -22,4 +22,4 @@ The only remaining thing to do is to open the Zeppelin interface (go to your-doc
 
 ```spark %spark , %spark.sql , %spark.dep , %spark.pyspark , %spark.r  ```
 
-Click Edit in this paragraph and then fill in yarn-client in the box next to 'master' and add in the Dependencies section the following org.apache.spark:spark-streaming-kafka_2.10:1.6.0
+Click Edit in this paragraph and then fill in yarn-client in the box next to 'master' and add in the Dependencies section the following *org.apache.spark:spark-streaming-kafka_2.10:1.6.0*
