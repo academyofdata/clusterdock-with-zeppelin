@@ -28,4 +28,4 @@ done
 docker cp $primary:/etc/hadoop/conf/core-site.xml .
 sed -i 's/<value>\/etc\/hadoop\/conf.cloudera.yarn\/topology.py<\/value>/<value>\/zeppelin\/conf\/hadoop\/topology.py<\/value>/g' ./core-site.xml
 docker cp ./core-site.xml ${zepl}:${hadoopcfgdir}/core-site.xml
-docker restart $zepl
+docker restart $zepname
