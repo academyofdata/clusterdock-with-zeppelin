@@ -167,7 +167,7 @@ def toVector(row:Row):Array[Double] = {
 }
 ```
 
-Now we have all the data prepared as we will needed to apply some basic ML techniques on it
+Now we have all the data prepared as we will needed to apply some basic ML techniques on it. We'll try to apply a supervised learning algorithm so we need to train the model using the data that we have. Since we're trying to forecast the RSVPs per hour, that's the 'label' (hence the reference to row(3)) and the rest of the data for the respective hour are the features that need to be taken into consideration.
 
 ```
 import org.apache.spark.mllib.regression.RidgeRegressionWithSGD
