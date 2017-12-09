@@ -182,9 +182,9 @@ val model = new RidgeRegressionWithSGD().run(trainingData)
 We trained the model using the data received let's now see what results do we get if we try to forecast the number of RSVPs for exactly the same date and hours (so that we can see how far we are with the prediction from the model vs actual data)
 
 ```
-val scores = meetupData.map { row =>
-       (row(0),row(2),row(3), model.predict(Vectors.dense(toVector(row))).toInt) 
+val predictions = meetupData.map { row => 
+      (row(0),row(2),row(3), model.predict(Vectors.dense(toVector(row))).toInt) 
 }
-scores.take(40).foreach(println)
+predictions.take(40).foreach(println)
 ```
 
