@@ -187,4 +187,15 @@ val predictions = meetupData.map { row =>
 }
 predictions.take(40).foreach(println)
 ```
+## Some pure analytics
 
+Assuming that all the data is still in the rsvps table, here's one way to get a list with all the tags associated with a country
+
+```
+import org.apache.spark.sql.functions.udf
+val getTags = udf((x:String) => x.split("-"))
+
+sqlContext.sql("select explode(group.group_topics) as topics,group.group_country as country from rsvps").select($"topics.urlkey",$"country").withColumn("tags",getTags($"urlkey")).select($"country",explode($"tags").as("itags")).rdd.map(
+    x => ((x(1).asInstanceOf[String],x(0).asInstanceOf[String]),1)
+).reduceByKey(_+_).toDF("tc","count").withColumn("tag",$"tc._1").withColumn("country",$"tc._2").drop($"tc").registerTempTable("tagspercountry")
+```
