@@ -6,6 +6,10 @@ We will be using some real-time streaming data coming from the RSVP activities o
 
 Once the containers are linked and (more importantly) running, go to <host_name_or_ip>:8080 (<hostname_or_ip> is the host where the docker containers are running) and create a new notebook with %spark as default interpretor
 
+Here's how everything looks like
+
+![Kafka + Spark + ML](streaML.png?raw=true "Architecture")
+
 Before running the code below in the notebook make sure to start a Kafka console producer (from the meetup.com stream) with this command
 
 ```
