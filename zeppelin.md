@@ -8,7 +8,7 @@ Once the containers are linked and (more importantly) running, go to <host_name_
 
 Here's how everything looks like
 
-![Kafka + Spark + ML](streaML.png?raw=true "Architecture")
+![Kafka + Spark + ML](StreaML.png?raw=true "Architecture")
 
 Before running the code below in the notebook make sure to start a Kafka console producer (from the meetup.com stream) with this command
 
