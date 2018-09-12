@@ -1,6 +1,6 @@
 #!/bin/bash
 #script that installs & configures zeppelin on an existing CDH cluster - not using parcels or packages
-ZEP_VER="0.7.3"
+ZEP_VER="0.8.0"
 
 if [ $# -ge 1 ]
 then
