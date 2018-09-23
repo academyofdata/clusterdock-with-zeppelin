@@ -10,7 +10,8 @@ else
 fi
 
 echo "getting Zeppeling Archive"
-wget http://mirror.evowise.com/apache/zeppelin/zeppelin-${ZEP_VER}/zeppelin-${ZEP_VER}-bin-all.tgz
+wget http://archive.apache.org/dist/zeppelin/zeppelin-${ZEP_VER}/zeppelin-${ZEP_VER}-bin-all.tgz
+#wget http://mirror.evowise.com/apache/zeppelin/zeppelin-${ZEP_VER}/zeppelin-${ZEP_VER}-bin-all.tgz
 #wget http://apache.javapipe.com/zeppelin/zeppelin-${ZEP_VER}/zeppelin-${ZEP_VER}-bin-all.tgz
 echo "unpacking..."
 tar -xzvf zeppelin-${ZEP_VER}-bin-all.tgz
